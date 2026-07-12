@@ -5,7 +5,7 @@ from functools import lru_cache
 
 from nltk.stem import PorterStemmer
 
-from .constants import BM25_K1
+from .constants import BM25_B, BM25_K1
 from .search_utils import DEFAULT_SEARCH_LIMIT, load_stopwords
 
 stemmer = PorterStemmer()
@@ -82,7 +82,9 @@ def bm25_idf_command(term: str) -> float:
     return index.get_bm25_idf(token)
 
 
-def bm25_tf_command(doc_id: int, term: str, k1: float = BM25_K1) -> float:
+def bm25_tf_command(
+    doc_id: int, term: str, k1: float = BM25_K1, b: float = BM25_B
+) -> float:
     from .inverted_index import InvertedIndex
 
     index = InvertedIndex()
@@ -93,7 +95,22 @@ def bm25_tf_command(doc_id: int, term: str, k1: float = BM25_K1) -> float:
         sys.exit(1)
 
     token = tokenize_term(term)
-    return index.get_bm25_tf(doc_id, token, k1)
+    return index.get_bm25_tf(doc_id, token, k1, b)
+
+
+def bm25_search_command(
+    query: str, limit: int = DEFAULT_SEARCH_LIMIT
+) -> list[tuple[dict, float]]:
+    from .inverted_index import InvertedIndex
+
+    index = InvertedIndex()
+    try:
+        index.load()
+    except FileNotFoundError as e:
+        print(e)
+        sys.exit(1)
+
+    return index.bm25_search(query, limit)
 
 
 def build_command() -> None:
