@@ -14,7 +14,14 @@ DOC_LENGTHS_PATH = "cache/doc_lengths.pkl"
 
 
 class InvertedIndex:
-    def __init__(self):
+    def __init__(
+        self, data_path: str = "data/movies.json", cache_prefix: str = "cache/"
+    ):
+        self.data_path = data_path
+        self.index_path = f"{cache_prefix}index.pkl"
+        self.docmap_path = f"{cache_prefix}docmap.pkl"
+        self.term_freq_path = f"{cache_prefix}term_frequencies.pkl"
+        self.doc_lengths_path = f"{cache_prefix}doc_lengths.pkl"
         self.index: dict[str, set[int]] = {}
         self.docmap: dict[int, dict] = {}
         self.term_frequencies: dict[int, Counter] = {}
@@ -79,7 +86,7 @@ class InvertedIndex:
         return sum(self.doc_lengths.values()) / len(self.doc_lengths)
 
     def build(self) -> None:
-        movies = load_movies()
+        movies = load_movies(self.data_path)
         for movie in movies:
             doc_id = movie["id"]
             self.docmap[doc_id] = movie
@@ -87,30 +94,30 @@ class InvertedIndex:
 
     def save(self) -> None:
         os.makedirs("cache", exist_ok=True)
-        with open(INDEX_PATH, "wb") as f:
+        with open(self.index_path, "wb") as f:
             pickle.dump(self.index, f)
-        with open(DOCMAP_PATH, "wb") as f:
+        with open(self.docmap_path, "wb") as f:
             pickle.dump(self.docmap, f)
-        with open(TERM_FREQ_PATH, "wb") as f:
+        with open(self.term_freq_path, "wb") as f:
             pickle.dump(self.term_frequencies, f)
-        with open(DOC_LENGTHS_PATH, "wb") as f:
+        with open(self.doc_lengths_path, "wb") as f:
             pickle.dump(self.doc_lengths, f)
 
     def load(self) -> None:
         if (
-            not os.path.exists(INDEX_PATH)
-            or not os.path.exists(DOCMAP_PATH)
-            or not os.path.exists(TERM_FREQ_PATH)
-            or not os.path.exists(DOC_LENGTHS_PATH)
+            not os.path.exists(self.index_path)
+            or not os.path.exists(self.docmap_path)
+            or not os.path.exists(self.term_freq_path)
+            or not os.path.exists(self.doc_lengths_path)
         ):
             raise FileNotFoundError(
                 "Index files not found. Run the 'build' command first."
             )
-        with open(INDEX_PATH, "rb") as f:
+        with open(self.index_path, "rb") as f:
             self.index = pickle.load(f)
-        with open(DOCMAP_PATH, "rb") as f:
+        with open(self.docmap_path, "rb") as f:
             self.docmap = pickle.load(f)
-        with open(TERM_FREQ_PATH, "rb") as f:
+        with open(self.term_freq_path, "rb") as f:
             self.term_frequencies = pickle.load(f)
-        with open(DOC_LENGTHS_PATH, "rb") as f:
+        with open(self.doc_lengths_path, "rb") as f:
             self.doc_lengths = pickle.load(f)

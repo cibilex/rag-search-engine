@@ -1,0 +1,104 @@
+{
+  "movies": [
+    {
+      "id": 1,
+      "title": "Apple",
+      "description": "The apple is one of the most widely cultivated tree fruits in the world. Its skin can be red, green, or yellow depending on the variety, while the flesh is crisp and pale. Apples are rich in fiber and vitamin C, and their antioxidants support heart health and may help lower cholesterol. Eating apples regularly is linked to better gut health thanks to the pectin they contain. Apple trees grow best in temperate climates with cold winters, and orchards are common across Europe, North America, and Central Asia. You can find apples in every grocery store year-round. They are eaten fresh, baked into pies, pressed into juice, or fermented into cider."
+    },
+    {
+      "id": 2,
+      "title": "Banana",
+      "description": "The banana is a long curved tropical fruit with a soft sweet interior. Its peel starts green and turns bright yellow as it ripens, eventually developing brown spots. Bananas are famous for their high potassium content, which supports healthy blood pressure and proper muscle function. They also provide vitamin B6 and quick natural energy, making them a favorite snack for athletes. Banana plants thrive in hot humid tropical regions, with most of the world's supply grown in Latin America, Southeast Asia, and Africa. Supermarkets sell them in bunches at low prices all year. Ripe bananas are eaten raw, blended into smoothies, or baked into bread."
+    },
+    {
+      "id": 3,
+      "title": "Orange",
+      "description": "The orange is a round citrus fruit with a thick fragrant peel and juicy segmented flesh. Both the skin and interior share the same bright orange color that gives the fruit its name. Oranges are an excellent source of vitamin C, which strengthens the immune system and helps the body absorb iron. The fruit also contains folate and antioxidants that protect skin and blood vessels. Orange trees flourish in warm Mediterranean and subtropical climates, with major production in Brazil, Spain, Florida, and Turkey. Fresh oranges and orange juice are available in nearly every market. People enjoy them peeled as a snack, squeezed for breakfast juice, or zested into desserts."
+    },
+    {
+      "id": 4,
+      "title": "Strawberry",
+      "description": "The strawberry is a small heart-shaped berry covered in tiny seeds. Its glossy skin is a vivid red and its flesh is fragrant and sweet. Strawberries deliver more vitamin C per serving than oranges and contain manganese and powerful antioxidants called anthocyanins. These compounds support heart health and may reduce inflammation. Strawberries grow low to the ground on small plants and prefer mild temperate climates with plenty of sun. They are farmed worldwide and picked fresh at local farms in late spring and early summer. Eat them fresh, sliced over yogurt, blended into milkshakes, or cooked into jam."
+    },
+    {
+      "id": 5,
+      "title": "Spinach",
+      "description": "Spinach is a leafy green vegetable with soft dark-green leaves. It is one of the most nutrient-dense foods available, packed with iron, calcium, vitamin K, and folate. The iron in spinach supports red blood cell production and helps fight fatigue, while vitamin K is essential for strong bones. Spinach grows quickly in cool weather and can be harvested several times per season. It is cultivated in gardens and farms across most of the world and sold fresh, frozen, or canned. Cooks toss young leaves into salads, wilt them into pasta, blend them into green smoothies, or fold them into omelets."
+    },
+    {
+      "id": 6,
+      "title": "Carrot",
+      "description": "The carrot is a crunchy root vegetable that grows underground with feathery green tops above the soil. Most carrots are bright orange, though purple, yellow, and white varieties exist. Carrots are loaded with beta-carotene, which the body converts into vitamin A to support sharp eyesight and healthy skin. Their fiber also aids digestion and helps maintain steady blood sugar. Carrots tolerate cool weather and grow in loose sandy soil across temperate regions worldwide. They are cheap and available in every market, fresh or frozen. Enjoy them raw as sticks with dip, roasted until sweet, grated into salads, or simmered in soups."
+    },
+    {
+      "id": 7,
+      "title": "Broccoli",
+      "description": "Broccoli is a green vegetable that looks like a miniature tree, with a thick stalk and a crown of tight flower buds. It belongs to the cabbage family and has an earthy slightly bitter taste. Broccoli is rich in vitamin C, vitamin K, and fiber, and it contains sulforaphane, a compound studied for its potential cancer-fighting properties. Regular consumption supports immune function and bone strength. Broccoli grows best in cool seasons and is farmed heavily in China, India, and the United States. Fresh and frozen broccoli are supermarket staples. Steam it as a side dish, roast it with olive oil, or stir-fry it with garlic."
+    },
+    {
+      "id": 8,
+      "title": "Tomato",
+      "description": "The tomato is a juicy red fruit that is treated as a vegetable in the kitchen. Its smooth skin surrounds soft flesh filled with seeds and tangy juice. Tomatoes are the richest common source of lycopene, an antioxidant linked to heart health and protection against sun damage. They also provide vitamin C and potassium. Tomato plants love warm sunny weather and are grown in gardens and greenhouses worldwide, with Italy, Spain, and Mexico famous for their crops. Markets sell countless varieties from tiny cherry tomatoes to giant beefsteaks. They are eaten raw in salads, cooked into pasta sauce, blended into soup, or sun-dried for a chewy snack."
+    },
+    {
+      "id": 9,
+      "title": "Blueberry",
+      "description": "The blueberry is a tiny round berry with deep blue-purple skin covered in a silvery bloom. Inside, the pale flesh is sweet with a gentle tartness. Blueberries are celebrated as a superfood because their anthocyanin antioxidants may protect the brain, improve memory, and support healthy aging. They also offer vitamin C, vitamin K, and fiber with very few calories. Blueberry bushes grow in acidic soil in cool northern climates, with major harvests in North America and northern Europe. Fresh berries fill market shelves in summer, and frozen ones are available all year. Sprinkle them over cereal, bake them into muffins, or eat them by the handful."
+    },
+    {
+      "id": 10,
+      "title": "Avocado",
+      "description": "The avocado is a pear-shaped fruit with rough dark-green skin and creamy pale-green flesh around a large single pit. Unlike most fruits it is rich in healthy monounsaturated fat, the same kind found in olive oil. This fat supports heart health and helps the body absorb fat-soluble vitamins from other foods. Avocados also provide potassium, folate, and fiber. Avocado trees need warm frost-free climates and are grown extensively in Mexico, Peru, and California. Grocery stores sell them hard and unripe, so plan a few days ahead. Mash them into guacamole, spread them on toast, or slice them into salads."
+    },
+    {
+      "id": 11,
+      "title": "Garlic",
+      "description": "Garlic is a pungent bulb vegetable made of individual cloves wrapped in papery white skin. It has been used as both food and medicine for thousands of years. Garlic contains allicin, a sulfur compound credited with supporting the immune system, lowering blood pressure, and reducing cholesterol. Its intense flavor mellows and sweetens when cooked. Garlic grows underground and is planted in autumn for harvest the following summer, with China producing most of the world's supply. Every market sells whole bulbs, and many stock pre-peeled cloves. Crush it into sauces, roast whole heads until buttery, or infuse it into oil."
+    },
+    {
+      "id": 12,
+      "title": "Sweet Potato",
+      "description": "The sweet potato is a starchy root vegetable with copper-brown skin and vivid orange flesh. It tastes naturally sweet and becomes soft and creamy when cooked. Sweet potatoes are exceptional sources of beta-carotene for eye health, along with fiber, potassium, and slow-burning carbohydrates that keep energy steady. They grow in warm climates with long growing seasons and are staple crops across Africa, Asia, and the southern United States. Markets sell them loose year-round at low cost. Bake them whole, mash them with butter, roast them as fries, or cube them into stews."
+    },
+    {
+      "id": 13,
+      "title": "Watermelon",
+      "description": "The watermelon is a huge round or oval fruit with a thick green striped rind and bright pink-red flesh dotted with dark seeds. It is over ninety percent water, making it one of the most refreshing foods on a hot day. Watermelon provides lycopene like tomatoes do, plus vitamin C and an amino acid called citrulline that may ease muscle soreness. The vines sprawl across warm fields and demand a long hot summer to ripen, with China, Turkey, and Iran leading production. Whole melons and pre-cut slices appear in every summer market. Serve it chilled in wedges, blend it into juice, or toss it into salads with feta."
+    },
+    {
+      "id": 14,
+      "title": "Cucumber",
+      "description": "The cucumber is a long cylindrical vegetable with dark green skin and pale watery flesh. Its high water content and cool crisp bite make it a classic refresher. Cucumbers offer hydration, vitamin K, and antioxidants while being extremely low in calories, which makes them popular in weight-loss diets. The plants climb or sprawl and produce heavily through warm summers in gardens worldwide. Fresh cucumbers are cheap and everywhere, from farmers markets to corner shops. Slice them into salads, pickle them in brine, layer them in sandwiches, or drop them into water for a spa-style drink."
+    },
+    {
+      "id": 15,
+      "title": "Red Pepper",
+      "description": "The red bell pepper is a glossy sweet vegetable with thick crunchy walls and a hollow seeded core. It starts green and turns brilliant red as it fully ripens, growing sweeter along the way. Red peppers contain more vitamin C than citrus fruit and are rich in vitamin A and antioxidants that benefit skin and eyes. They grow on compact plants in warm sunny conditions and are farmed both outdoors and in vast greenhouses, notably in Spain and the Netherlands. Supermarkets stock them beside their green and yellow siblings. Eat them raw with hummus, roast them until charred and silky, or stuff them with rice and bake."
+    },
+    {
+      "id": 16,
+      "title": "Grape",
+      "description": "Grapes are small oval fruits that grow in tight clusters on woody vines. Their thin skins come in green, red, or nearly black, each hiding juicy translucent flesh. Grapes contain resveratrol, an antioxidant in their skins linked to heart health and healthy aging. They also supply quick natural sugars and vitamin K. Vineyards cover hillsides in temperate regions around the world, from France and Italy to Chile and California, where grapes are grown for eating fresh and for wine. Seedless table grapes are a supermarket staple all year. Eat them chilled by the bunch, freeze them for a summer snack, or add them to cheese boards."
+    },
+    {
+      "id": 17,
+      "title": "Onion",
+      "description": "The onion is a layered bulb vegetable with papery skin and sharp-tasting flesh that makes cooks cry when sliced. Onions come in yellow, red, and white varieties, each with its own strength. They contain quercetin, an antioxidant that may reduce inflammation and support heart health, along with prebiotic fibers that feed good gut bacteria. Onions store well for months, which made them a survival staple throughout history. They grow underground in nearly every climate and every country. Markets sell them loose in bins for pennies. Onions form the flavor base of countless dishes, whether diced raw into salsa, caramelized slowly until golden, or fried into crispy rings."
+    },
+    {
+      "id": 18,
+      "title": "Lemon",
+      "description": "The lemon is a bright yellow citrus fruit with fragrant oily skin and intensely sour juice. That sharp acidity comes from citric acid, and a single lemon covers a large share of your daily vitamin C needs. Lemon juice supports iron absorption and its scent alone is used to lift moods. Lemon trees bloom and fruit almost continuously in mild Mediterranean climates, with groves throughout Italy, Spain, California, and Argentina. Every produce aisle keeps a pile of lemons year-round. Squeeze them over fish, whisk them into salad dressings, bake them into tarts, or steep the zest in hot tea."
+    },
+    {
+      "id": 19,
+      "title": "Pumpkin",
+      "description": "The pumpkin is a large round winter squash with ribbed orange skin and dense sweet flesh around a hollow core of seeds. Its color announces its richness in beta-carotene, which the body turns into vitamin A for vision and immune health. Pumpkin flesh is low in calories yet filling, and the seeds are little mines of zinc, magnesium, and healthy fats. Pumpkins sprawl across fields on long vines and are harvested in autumn, famously decorating porches before being cooked. Farms and markets pile them high every fall. Roast the flesh for soup, puree it into pie filling, and toast the seeds with salt for snacking."
+    },
+    {
+      "id": 20,
+      "title": "Kiwi",
+      "description": "The kiwi is a small egg-shaped fruit with fuzzy brown skin hiding brilliant emerald-green flesh speckled with tiny black seeds. Its flavor balances sweet and tart, somewhere between strawberry and citrus. Kiwis pack more vitamin C than oranges gram for gram and contain actinidin, an enzyme that helps digest protein. Their fiber supports smooth digestion. Kiwi vines originally come from China but New Zealand made the fruit famous and remains a top exporter alongside Italy and Greece. Most supermarkets sell them individually or in small trays. Scoop the flesh with a spoon, slice it onto pavlova, or blend it into green smoothies."
+    }
+  ]
+}
