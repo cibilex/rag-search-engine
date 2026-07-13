@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAG Search Engine</title>
+<style>
+  :root {
+    --bg: #0f1115; --panel: #181b22; --border: #2a2f3a;
+    --text: #e8eaf0; --muted: #9aa3b2; --accent: #5b8def; --chip: #232836;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f5f6f8; --panel: #ffffff; --border: #dde1e8;
+      --text: #1c2130; --muted: #5d6675; --accent: #2b5fd9; --chip: #eef1f6;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font: 16px/1.55 system-ui, -apple-system, sans-serif;
+    max-width: 760px; margin: 0 auto; padding: 40px 20px 80px;
+  }
+  h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  .sub { color: var(--muted); font-size: .9rem; margin-bottom: 28px; }
+
+  .modes { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .modes button {
+    background: var(--chip); color: var(--text); border: 1px solid var(--border);
+    padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: .9rem;
+  }
+  .modes button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .bar { display: flex; gap: 8px; margin-bottom: 8px; }
+  #q {
+    flex: 1; background: var(--panel); color: var(--text);
+    border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 1rem;
+  }
+  #q:focus { outline: 2px solid var(--accent); border-color: transparent; }
+  #go {
+    background: var(--accent); color: #fff; border: 0; border-radius: 10px;
+    padding: 12px 22px; font-size: 1rem; cursor: pointer;
+  }
+  #go:disabled { opacity: .5; cursor: wait; }
+  .opts { color: var(--muted); font-size: .85rem; margin-bottom: 24px; }
+  .opts input { width: 52px; background: var(--panel); color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; }
+
+  #status { color: var(--muted); font-size: .9rem; margin-bottom: 16px; min-height: 1.2em; }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px; margin-bottom: 12px;
+  }
+  .card h3 { font-size: 1.02rem; display: flex; justify-content: space-between; gap: 12px; }
+  .score { color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; font-size: .9rem; }
+  .snippet { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+  .chunk {
+    margin-top: 10px; padding: 10px 12px; border-left: 3px solid var(--accent);
+    background: var(--chip); border-radius: 6px; font-size: .87rem;
+  }
+  .chunk b { color: var(--accent); font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; }
+  mark { background: var(--accent); color: #fff; border-radius: 3px; padding: 0 3px; }
+  details.acc { margin-top: 6px; }
+  details.acc summary {
+    cursor: pointer; color: var(--muted); font-size: .9rem; list-style: none;
+  }
+  details.acc summary::after { content: "  ▸ show full description"; color: var(--accent); font-size: .8rem; }
+  details.acc[open] summary::after { content: "  ▾ hide"; }
+  .full { color: var(--muted); font-size: .9rem; margin-top: 8px; white-space: pre-wrap; }
+  .stats { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .stats span {
+    background: var(--chip); border: 1px solid var(--border); color: var(--muted);
+    font-size: .74rem; padding: 2px 8px; border-radius: 10px;
+  }
+  details.chunk-acc summary { cursor: pointer; list-style: none; }
+  details.chunk-acc summary::after { content: "  ▸ full chunk"; color: var(--accent); font-size: .8rem; }
+  details.chunk-acc[open] summary::after { content: "  ▾ hide"; }
+</style>
+</head>
+<body>
+  <h1>RAG Search Engine</h1>
+  <p class="sub">boot.dev tutorial project — compare three search engines on 5,000 movies</p>
+
+  <div class="modes" id="datasets">
+    <button data-dataset="movies" class="active">boot.dev movies (5k)</button>
+    <button data-dataset="produce">fruits &amp; vegetables (20)</button>
+  </div>
+
+  <div class="modes" id="modes">
+    <button data-mode="keyword">Keyword (BM25)</button>
+    <button data-mode="semantic" class="active">Semantic (whole doc)</button>
+    <button data-mode="chunked">Semantic (chunked)</button>
+  </div>
+
+  <div class="bar">
+    <input id="q" placeholder="e.g. Earth is inside a locker at an alien train station" autofocus>
+    <button id="go">Search</button>
+  </div>
+  <div class="opts">limit <input id="limit" type="number" value="5" min="1" max="50"></div>
+
+  <div id="status"></div>
+  <div id="results"></div>
+
+<script>
+  let mode = "semantic";
+  let dataset = "movies";
+  const $ = (id) => document.getElementById(id);
+
+  $("modes").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-mode]");
+    if (!btn) return;
+    mode = btn.dataset.mode;
+    document.querySelectorAll("#modes button").forEach(b => b.classList.toggle("active", b === btn));
+  });
+
+  $("datasets").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-dataset]");
+    if (!btn) return;
+    dataset = btn.dataset.dataset;
+    document.querySelectorAll("#datasets button").forEach(b => b.classList.toggle("active", b === btn));
+  });
+
+  async function run() {
+    const q = $("q").value.trim();
+    if (!q) return;
+    $("go").disabled = true;
+    $("results").innerHTML = "";
+    $("status").textContent = "searching… (first search per mode loads the engine, can take ~15s)";
+    const t0 = performance.now();
+    try {
+      const res = await fetch(`/api/search?dataset=${dataset}&mode=${mode}&q=${encodeURIComponent(q)}&limit=${$("limit").value}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      const ms = ((performance.now() - t0) / 1000).toFixed(2);
+      $("status").textContent = `${data.results.length} results in ${ms}s — ${dataset} / ${mode}`;
+      const words = (s) => s.trim().split(/\s+/).length;
+      $("results").innerHTML = data.results.map((r, i) => {
+        const hl = (s) => highlight(esc(s), r.highlight);
+        const stats = [
+          `raw: ${r.raw_score}`,
+          `description: ${words(r.description)} words / ${r.description.length} chars`,
+          ...(r.matched_chunk ? [
+            `chunk ${r.chunk_idx + 1} of ${r.total_chunks}`,
+            `chunk: ${words(r.matched_chunk)} words / ${r.matched_chunk.length} chars`,
+          ] : []),
+        ].map(s => `<span>${s}</span>`).join("");
+        return `
+        <div class="card">
+          <h3><span>${i + 1}. ${hl(r.title)}</span><span class="score">${r.score}</span></h3>
+          <details class="acc">
+            <summary class="snippet">${hl(r.snippet)}…</summary>
+            <div class="full">${hl(r.description)}</div>
+          </details>
+          ${r.matched_chunk ? `
+          <div class="chunk">
+            <details class="chunk-acc">
+              <summary><b>matched chunk</b><br>${esc(r.matched_chunk.slice(0, 200))}…</summary>
+              <div class="full">${esc(r.matched_chunk)}</div>
+            </details>
+          </div>` : ""}
+          <div class="stats">${stats}</div>
+        </div>`;
+      }).join("");
+    } catch (err) {
+      $("status").textContent = "error: " + err.message;
+    } finally {
+      $("go").disabled = false;
+    }
+  }
+
+  const esc = (s) => s.replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+
+  function highlight(escapedText, words) {
+    if (!words || !words.length) return escapedText;
+    const pattern = new RegExp(`\\b(${words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "gi");
+    return escapedText.replace(pattern, "<mark>$1</mark>");
+  }
+
+  $("go").addEventListener("click", run);
+  $("q").addEventListener("keydown", (e) => { if (e.key === "Enter") run(); });
+</script>
+</body>
+</html>
