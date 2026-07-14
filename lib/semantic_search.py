@@ -2,6 +2,11 @@ import json
 import os
 import re
 
+from dotenv import load_dotenv
+
+load_dotenv()
+os.environ.setdefault("HF_HUB_VERBOSITY", "error")
+
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
@@ -40,7 +45,9 @@ class SemanticSearch:
         for doc in documents:
             self.document_map[doc["id"]] = doc
 
-        movie_strings = [f"{doc['title']}: {doc['description']}" for doc in documents]
+        movie_strings = [
+            f"{doc['title']}\n\n{doc['description']}" for doc in documents
+        ]
         self.embeddings = self.model.encode(movie_strings, show_progress_bar=True)
         np.save(self.embeddings_path, self.embeddings)
         return self.embeddings
@@ -119,7 +126,7 @@ class ChunkedSemanticSearch(SemanticSearch):
                 description, self.chunk_size, self.chunk_overlap
             )
             for chunk_idx, chunk in enumerate(chunks):
-                all_chunks.append(f"{doc['title']}: {chunk}")
+                all_chunks.append(f"{doc['title']}\n\n{chunk}")
                 chunk_metadata.append(
                     {
                         "movie_idx": movie_idx,

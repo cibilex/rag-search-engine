@@ -85,6 +85,20 @@ def get_chunked_engine(dataset: str):
     return _engines[key]
 
 
+def get_hybrid_engine(dataset: str):
+    key = (dataset, "hybrid")
+    if key not in _engines:
+        from lib.hybrid_search import HybridSearch
+
+        cfg = DATASETS[dataset]
+        if dataset != "movies":
+            raise ValueError(
+                "hybrid search currently supports only the movies dataset"
+            )
+        _engines[key] = HybridSearch(load_movies(cfg["data"]))
+    return _engines[key]
+
+
 def matched_words(text: str, query_tokens: set[str]) -> list[str]:
     from lib.keyword_search import preprocess_text, stemmer
 
@@ -147,6 +161,30 @@ def search(dataset: str, mode: str, query: str, limit: int) -> list[dict]:
                 "highlight": [],
             }
             for r in engine.search_chunks(query, limit)
+        ]
+    if mode in ("hybrid_weighted", "hybrid_rrf"):
+        engine = get_hybrid_engine(dataset)
+        if mode == "hybrid_weighted":
+            results = engine.weighted_search(query, alpha=0.5, limit=limit)
+        else:
+            results = engine.rrf_search(query, k=60, limit=limit)
+        return [
+            {
+                "title": r["title"],
+                "score": round(float(r["score"]), 4),
+                "raw_score": (
+                    f"bm25 {r['bm25_score']:.3f} + semantic {r['semantic_score']:.3f}"
+                    if "bm25_score" in r
+                    else f"bm25 rank {r['bm25_rank'] or '-'}, semantic rank {r['semantic_rank'] or '-'}"
+                    if "bm25_rank" in r
+                    else "hybrid"
+                ),
+                "snippet": r.get("document", r.get("description", ""))[:200],
+                "description": r.get("description", r.get("document", "")),
+                "matched_chunk": r.get("metadata", {}).get("matched_chunk"),
+                "highlight": [],
+            }
+            for r in results
         ]
     raise ValueError(f"unknown mode: {mode}")
 
