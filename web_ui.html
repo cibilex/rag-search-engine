@@ -41,9 +41,10 @@
     background: var(--accent); color: #fff; border: 0; border-radius: 10px;
     padding: 12px 22px; font-size: 1rem; cursor: pointer;
   }
-  #go:disabled { opacity: .5; cursor: wait; }
+  #go:disabled { opacity: .5; cursor: not-allowed; }
   .opts { color: var(--muted); font-size: .85rem; margin-bottom: 24px; }
-  .opts input { width: 52px; background: var(--panel); color: var(--text);
+  .opts input { width: 52px; }
+  .opts input, .opts select { background: var(--panel); color: var(--text);
     border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; }
 
   #status { color: var(--muted); font-size: .9rem; margin-bottom: 16px; min-height: 1.2em; }
@@ -97,9 +98,27 @@
 
   <div class="bar">
     <input id="q" placeholder="e.g. Earth is inside a locker at an alien train station" autofocus>
-    <button id="go">Search</button>
+    <button id="go" disabled>Search</button>
   </div>
-  <div class="opts">limit <input id="limit" type="number" value="5" min="1" max="50"></div>
+  <div class="opts">
+    limit <input id="limit" type="number" value="5" min="1" max="50">
+    &nbsp;&nbsp;<label>enhance (LLM)
+      <select id="enhance">
+        <option value="">off</option>
+        <option value="spell">spell-fix</option>
+        <option value="rewrite">rewrite</option>
+        <option value="expand">expand</option>
+      </select>
+    </label>
+    &nbsp;&nbsp;<label>rerank (LLM, slow)
+      <select id="rerank">
+        <option value="">off</option>
+        <option value="individual">individual</option>
+        <option value="batch">batch</option>
+        <option value="cross_encoder">cross-encoder</option>
+      </select>
+    </label>
+  </div>
 
   <div id="status"></div>
   <div id="results"></div>
@@ -131,11 +150,17 @@
     $("status").textContent = "searching… (first search per mode loads the engine, can take ~15s)";
     const t0 = performance.now();
     try {
-      const res = await fetch(`/api/search?dataset=${dataset}&mode=${mode}&q=${encodeURIComponent(q)}&limit=${$("limit").value}`);
+      const enhance = $("enhance").value ? `&enhance=${$("enhance").value}` : "";
+      const rerank = $("rerank").value ? `&rerank=${$("rerank").value}` : "";
+      const res = await fetch(`/api/search?dataset=${dataset}&mode=${mode}&q=${encodeURIComponent(q)}&limit=${$("limit").value}${enhance}${rerank}`);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       const ms = ((performance.now() - t0) / 1000).toFixed(2);
-      $("status").textContent = `${data.results.length} results in ${ms}s — ${dataset} / ${mode}`;
+      let status = `${data.results.length} results in ${ms}s — ${dataset} / ${mode}`;
+      if (data.enhanced) {
+        status += ` — enhanced (${data.enhanced.method}): '${data.enhanced.original}' → '${data.enhanced.query}'`;
+      }
+      $("status").textContent = status;
       const words = (s) => s.trim().split(/\s+/).length;
       $("results").innerHTML = data.results.map((r, i) => {
         const hl = (s) => highlight(esc(s), r.highlight);
@@ -167,7 +192,7 @@
     } catch (err) {
       $("status").textContent = "error: " + err.message;
     } finally {
-      $("go").disabled = false;
+      $("go").disabled = !$("q").value.trim();
     }
   }
 
@@ -181,6 +206,7 @@
 
   $("go").addEventListener("click", run);
   $("q").addEventListener("keydown", (e) => { if (e.key === "Enter") run(); });
+  $("q").addEventListener("input", () => { $("go").disabled = !$("q").value.trim(); });
 </script>
 </body>
 </html>

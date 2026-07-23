@@ -5,7 +5,9 @@ Open:  http://localhost:8000
 """
 
 import json
+import logging
 import sys
+import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
@@ -13,6 +15,12 @@ from urllib.parse import urlparse, parse_qs
 sys.path.insert(0, ".")
 
 from lib.search_utils import load_movies
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
+logger = logging.getLogger("rag.web")
 
 PORT = 8000
 HTML_PATH = Path(__file__).parent / "web_ui.html"
@@ -110,7 +118,9 @@ def matched_words(text: str, query_tokens: set[str]) -> list[str]:
     return sorted(hits)
 
 
-def search(dataset: str, mode: str, query: str, limit: int) -> list[dict]:
+def search(
+    dataset: str, mode: str, query: str, limit: int, rerank: str | None = None
+) -> list[dict]:
     if mode == "keyword":
         from lib.keyword_search import tokenize_text
 
@@ -166,6 +176,13 @@ def search(dataset: str, mode: str, query: str, limit: int) -> list[dict]:
         engine = get_hybrid_engine(dataset)
         if mode == "hybrid_weighted":
             results = engine.weighted_search(query, alpha=0.5, limit=limit)
+        elif rerank:
+            from lib.llm import RERANKERS
+
+            if rerank not in RERANKERS:
+                raise ValueError(f"unknown rerank method: {rerank}")
+            results = engine.rrf_search(query, k=60, limit=limit * 5)
+            results = RERANKERS[rerank](query, results)[:limit]
         else:
             results = engine.rrf_search(query, k=60, limit=limit)
         return [
@@ -173,7 +190,13 @@ def search(dataset: str, mode: str, query: str, limit: int) -> list[dict]:
                 "title": r["title"],
                 "score": round(float(r["score"]), 4),
                 "raw_score": (
-                    f"bm25 {r['bm25_score']:.3f} + semantic {r['semantic_score']:.3f}"
+                    f"rerank {r['rerank_score']:.1f}/10, rrf {r['score']:.3f}"
+                    if "rerank_score" in r
+                    else f"rerank rank {r['rerank_rank']}, rrf {r['score']:.3f}"
+                    if "rerank_rank" in r
+                    else f"cross-enc {r['cross_encoder_score']:.3f}, rrf {r['score']:.3f}"
+                    if "cross_encoder_score" in r
+                    else f"bm25 {r['bm25_score']:.3f} + semantic {r['semantic_score']:.3f}"
                     if "bm25_score" in r
                     else f"bm25 rank {r['bm25_rank'] or '-'}, semantic rank {r['semantic_rank'] or '-'}"
                     if "bm25_rank" in r
@@ -208,15 +231,40 @@ class Handler(BaseHTTPRequestHandler):
             if dataset not in DATASETS:
                 dataset = "movies"
             limit = int(params.get("limit", ["5"])[0])
+            enhance = params.get("enhance", [None])[0]
+            rerank = params.get("rerank", [None])[0]
+            t0 = time.perf_counter()
+            logger.info(
+                "search: dataset=%s mode=%s query=%r limit=%d enhance=%s rerank=%s",
+                dataset, mode, query, limit, enhance, rerank,
+            )
             try:
                 if not query:
                     raise ValueError("empty query")
-                results = search(dataset, mode, query, limit)
-                payload = {"results": results}
+                enhanced = None
+                if enhance:
+                    from lib.llm import ENHANCERS, enhance_query
+
+                    if enhance not in ENHANCERS:
+                        raise ValueError(f"unknown enhance method: {enhance}")
+                    corrected = enhance_query(query, enhance)
+                    enhanced = {
+                        "method": enhance,
+                        "original": query,
+                        "query": corrected,
+                    }
+                    query = corrected
+                results = search(dataset, mode, query, limit, rerank)
+                payload = {"results": results, "enhanced": enhanced}
                 status = 200
+                logger.info(
+                    "done: %d results in %.2fs",
+                    len(results), time.perf_counter() - t0,
+                )
             except Exception as e:
                 payload = {"error": str(e)}
                 status = 400
+                logger.exception("search failed: %s", e)
             body = json.dumps(payload).encode()
             self.send_response(status)
             self.send_header("Content-Type", "application/json")
